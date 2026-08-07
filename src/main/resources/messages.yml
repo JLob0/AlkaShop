@@ -1,0 +1,38 @@
+# Mensagens do AlkaShop. Suporta tags MiniMessage (<red>, <b>, etc).
+
+prefix: "<aqua><b>AlkaShop</b> <dark_gray>» "
+
+general:
+  player-only: "<red>Este comando so pode ser usado por jogadores."
+  no-permission: "<red>Voce nao tem permissao para usar este comando."
+  invalid-usage: "<red>Uso: <white><usage>"
+  unknown-player: "<red>Jogador <white><name></white> nao encontrado."
+  unknown-material: "<red>Material invalido: <white><value></white>."
+  invalid-amount: "<red>Valor invalido: <white><value></white>."
+  reloaded: "<green>Configuracao e precos recarregados."
+
+sell:
+  sold-all: "<green><b>LOJA!</b> <gray>Voce vendeu por <totals>."
+  sold-hand: "<green><b>LOJA!</b> <gray>Voce vendeu <white><item></white> por <totals>."
+  sold-selected: "<green><b>LOJA!</b> <gray>Voce vendeu os itens selecionados por <totals>."
+  sold-auto: "<green><b>+<amount></b></green> <gray>(auto-venda)"
+  not-sellable: "<red>Este item nao pode ser vendido."
+  no-items: "<red>Voce nao tem itens vendaveis."
+  auto-sell-enabled: "<green>Auto-venda <dark_green>ativada</dark_green>."
+  auto-sell-disabled: "<red>Auto-venda <dark_red>desativada</dark_red>."
+  price-info-header: "<aqua><b>Preco de <material></b>"
+  price-line: "<gray>- <white><currency></white>: <yellow><value>"
+  no-price: "<yellow>Este material nao tem preco configurado (nao vendavel)."
+
+admin:
+  price-set: "<green>Preco de <white><material></white> em <white><currency></white> definido para <white><value>."
+  price-removed: "<green>Preco de <white><material></white> em <white><currency></white> removido."
+  debug-header: "<aqua><b>Debug de precos (<count> resolvidos):</b>"
+  toggle-success: "<green>Auto-venda de <white><name></white> agora esta <white><status></white>."
+  info-header: "<gray>--- <white>Estatisticas de vendas: <name> <gray>---"
+  info-line: |
+    <gray>Auto-venda: <white><autosell>
+    <gray>Total vendido em coins: <white><coins>
+    <gray>Total vendido em escarion: <white><escarion>
+    <gray>Itens vendidos: <white><items>
+    <gray>Transacoes: <white><transactions>

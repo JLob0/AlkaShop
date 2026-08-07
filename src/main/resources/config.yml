@@ -1,0 +1,49 @@
+# AlkaShop - suporta tags MiniMessage (<red>, <b>, etc) em messages.yml.
+
+# Forcar auto-sell para todos (jogadores nao podem desligar)
+force-autosell: false
+
+# Prioridade do evento de pickup (fallback de auto-sell quando AlkaDrop nao esta instalado)
+event-priority: HIGH
+
+# Venda
+selling:
+  # Vender armadura equipada? (false = seguro)
+  sell-armor: false
+  # Vender itens na off-hand?
+  sell-offhand: true
+  # Vender itens no hotbar? (sempre incluido em "vender tudo" - so afeta iteracao explicita)
+  sell-hotbar: true
+  # Arredondar valores?
+  round-values: true
+  # Casas decimais
+  decimal-places: 2
+
+# Auto-sell
+auto-sell:
+  # Som ao vender automaticamente
+  sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  # Volume do som
+  sound-volume: 0.5
+  # Mostrar actionbar?
+  actionbar: true
+
+# Mensagens quando inventario cheio durante venda (venda selecionada -> cancelar)
+inventory-full:
+  actionbar: true
+  message: "<red><b>INVENTARIO CHEIO!</b> <gray>Itens nao vendidos devolvidos."
+  sound: "ENTITY_ITEM_BREAK"
+
+# Banco de dados (estatisticas dos jogadores)
+storage:
+  type: SQLITE  # SQLITE | MYSQL
+  mysql:
+    host: localhost
+    port: 3306
+    database: alkashop
+    username: root
+    password: ''
+    pool-size: 5
+
+# Debug (so use se necessario)
+debug: false

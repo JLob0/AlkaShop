@@ -1,0 +1,67 @@
+main-menu:
+  title: "<dark_gray>Vender itens"
+  size: 27
+  items:
+    selected:
+      slot: 11
+      material: HOPPER
+      name: "<green>Venda selecionada"
+      lore:
+        - "<gray>Vai abrir um bau virtual ao qual"
+        - "<gray>voce colocar todos os itens que"
+        - "<gray>queira vender."
+        - ""
+        - "<yellow>Acesso rapido: <white>/vendersel"
+        - ""
+        - "<green>Clique para acessar."
+    all:
+      slot: 13
+      material: CHEST
+      name: "<green>Vender tudo"
+      lore:
+        - "<gray>Voce vai vender todos os itens"
+        - "<gray>que estao no seu inventario."
+        - ""
+        - "<yellow>Acesso rapido: <white>/vendertudo"
+        - ""
+        - "<green>Clique para vender."
+    hand:
+      slot: 15
+      material: ANVIL
+      name: "<green>Venda segurando"
+      lore:
+        - "<gray>Voce vai vender os itens que"
+        - "<gray>voce esta segurando."
+        - ""
+        - "<yellow>Acesso rapido: <white>/vendermao"
+        - ""
+        - "<green>Clique para vender."
+    auto-sell:
+      slot: 22
+      material: EMERALD_BLOCK
+      name: "<green>Auto-Venda: <white><status>"
+      lore:
+        - "<gray>Venda automatica ao coletar itens."
+        - "<gray>Requer permissao VIP."
+        - ""
+        - "<yellow>Acesso rapido: <white>/venderautomatico"
+        - ""
+        - "<green>Clique para <toggle>."
+
+virtual-chest:
+  title: "<dark_gray>Coloque os itens para vender"
+  size: 54
+  confirm-slot: 49
+  confirm-item:
+    material: EMERALD_BLOCK
+    name: "<green><b>CONFIRMAR VENDA</b>"
+    lore:
+      - "<gray>Clique para vender todos os itens"
+      - "<gray>colocados acima."
+  cancel-slot: 53
+  cancel-item:
+    material: BARRIER
+    name: "<red><b>CANCELAR</b>"
+    lore:
+      - "<gray>Clique para cancelar e devolver"
+      - "<gray>os itens ao seu inventario."

@@ -1,0 +1,134 @@
+# Precos globais por material.
+# Configure o "pai" (bloco) e o plugin calcula o "filho" (item) automaticamente via
+# receitas de crafting reversiveis (9x/4x item -> 1 bloco). Ou configure o item direto.
+# Material sem entrada aqui = nao vendavel.
+
+prices:
+  # ============================================
+  # MINERIOS / METAIS (configurados pelo bloco)
+  # ============================================
+  DIAMOND_BLOCK:
+    coins: 450.0
+  IRON_BLOCK:
+    coins: 900.0
+  GOLD_BLOCK:
+    coins: 810.0
+  EMERALD_BLOCK:
+    coins: 1350.0
+  NETHERITE_BLOCK:
+    coins: 45000.0
+  COPPER_BLOCK:
+    coins: 540.0
+  RAW_IRON_BLOCK:
+    coins: 720.0
+  RAW_GOLD_BLOCK:
+    coins: 648.0
+  RAW_COPPER_BLOCK:
+    coins: 432.0
+
+  # ============================================
+  # REDSTONE / LAPIS / CARVAO (configurados pelo bloco)
+  # ============================================
+  REDSTONE_BLOCK:
+    coins: 315.0
+  LAPIS_BLOCK:
+    coins: 200.0
+  COAL_BLOCK:
+    coins: 162.0
+
+  # ============================================
+  # PEDRAS / CONSTRUCAO (preco direto)
+  # ============================================
+  STONE:
+    coins: 2.0
+  COBBLESTONE:
+    coins: 1.0
+  COBBLED_DEEPSLATE:
+    coins: 1.5
+  DEEPSLATE:
+    coins: 3.0
+  GRANITE:
+    coins: 1.0
+  DIORITE:
+    coins: 1.0
+  ANDESITE:
+    coins: 1.0
+  SANDSTONE:
+    coins: 2.0
+
+  # ============================================
+  # TERRACOTAS / TERRAS (preco direto)
+  # ============================================
+  GREEN_TERRACOTTA:
+    coins: 5.0
+  PINK_TERRACOTTA:
+    coins: 5.0
+  TERRACOTTA:
+    coins: 3.0
+  DIRT:
+    coins: 0.5
+  SAND:
+    coins: 1.0
+  GRAVEL:
+    coins: 1.0
+
+  # ============================================
+  # MADEIRAS (preco direto)
+  # ============================================
+  OAK_LOG:
+    coins: 4.0
+  BIRCH_LOG:
+    coins: 4.0
+  SPRUCE_LOG:
+    coins: 5.0
+  DARK_OAK_LOG:
+    coins: 6.0
+  JUNGLE_LOG:
+    coins: 5.0
+  ACACIA_LOG:
+    coins: 5.0
+  MANGROVE_LOG:
+    coins: 6.0
+  CHERRY_LOG:
+    coins: 8.0
+
+  # ============================================
+  # COMIDA / AGRICULTURA (preco direto)
+  # ============================================
+  WHEAT:
+    coins: 2.0
+  CARROT:
+    coins: 2.0
+  POTATO:
+    coins: 2.0
+  BEETROOT:
+    coins: 2.0
+  COOKED_BEEF:
+    coins: 15.0
+  COOKED_PORKCHOP:
+    coins: 15.0
+  COOKED_CHICKEN:
+    coins: 12.0
+  BREAD:
+    coins: 10.0
+
+  # ============================================
+  # MULTIPLAS MOEDAS (exemplo)
+  # ============================================
+  EMERALD:
+    coins: 150.0
+    escarion: 3.0
+  NETHERITE_INGOT:
+    coins: 5000.0
+    escarion: 50.0
+  DIAMOND:
+    coins: 50.0
+    escarion: 1.0
+
+  # ============================================
+  # ITENS QUE NAO VENDEM (sem preco = nao vendavel)
+  # ============================================
+  # Deixe sem configurar:
+  # SHULKER_SHELL:
+  # BEACON:
+  # NETHER_STAR:
