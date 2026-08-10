@@ -12,8 +12,8 @@ commands:
     description: Abre a GUI principal de vendas.
     usage: /<command>
   vendertudo:
-    description: Vende todo o inventario.
-    usage: /<command>
+    description: Vende todo o inventario, ou so uma categoria.
+    usage: /<command> [categoria]
   vendermao:
     description: Vende o item na mao principal.
     usage: /<command>
@@ -21,8 +21,8 @@ commands:
     description: Abre o bau virtual de venda selecionada.
     usage: /<command>
   venderautomatico:
-    description: Liga/desliga a venda automatica (VIP).
-    usage: /<command>
+    description: Configura a venda automatica por material/categoria (VIP).
+    usage: /<command> [todos|nenhum|<material>]
     aliases: [autosell]
   venderpreco:
     description: Ve o preco de um material.
@@ -37,6 +37,18 @@ permissions:
     default: true
   alkashop.autosell:
     description: Permite ativar venda automatica (VIP).
+    default: false
+  alkashop.autosell.all:
+    description: Permite ativar auto-venda para todos os itens de uma vez.
+    default: false
+  alkashop.autosell.minerios:
+    description: Permite auto-vender materiais da categoria minerios.
+    default: false
+  alkashop.autosell.fazenda:
+    description: Permite auto-vender materiais da categoria fazenda.
+    default: false
+  alkashop.autosell.madeira:
+    description: Permite auto-vender materiais da categoria madeira.
     default: false
   alkashop.admin.reload:
     description: Recarregar config/precos.

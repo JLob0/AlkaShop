@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ public final class PriceManager {
     private final Map<Material, Material> itemToBlock = new HashMap<>();
     private final Map<Material, Integer> itemToRatio = new HashMap<>();
     private final Map<Material, Map<String, Double>> resolvedCache = new HashMap<>();
+    private final Map<Material, String> materialCategories = new HashMap<>();
 
     public PriceManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -48,6 +50,7 @@ public final class PriceManager {
         itemToBlock.clear();
         itemToRatio.clear();
         resolvedCache.clear();
+        materialCategories.clear();
 
         scanRecipes();
         loadDirectPrices();
@@ -82,6 +85,10 @@ public final class PriceManager {
             }
             if (!currencyPrices.isEmpty()) {
                 directPrices.put(material, new ShopPrice(material, currencyPrices));
+            }
+            String category = entrySection.getString("category", "");
+            if (!category.isBlank()) {
+                materialCategories.put(material, category.toLowerCase());
             }
         }
     }
@@ -260,6 +267,14 @@ public final class PriceManager {
             for (Map.Entry<String, Double> priceEntry : entry.getValue().prices().entrySet()) {
                 yaml.set("prices." + entry.getKey().name() + "." + priceEntry.getKey(), priceEntry.getValue());
             }
+            // Sem isso, o primeiro /alkashop setprice depois de qualquer material ganhar
+            // uma categoria reescreveria prices.yml do zero e apagaria a categoria de
+            // TODO material, ja que essa reescrita e sempre um snapshot completo do
+            // directPrices, nunca um merge com o que ja estava no arquivo.
+            String category = materialCategories.get(entry.getKey());
+            if (category != null) {
+                yaml.set("prices." + entry.getKey().name() + ".category", category);
+            }
         }
         try {
             yaml.save(new File(plugin.getDataFolder(), "prices.yml"));
@@ -274,5 +289,24 @@ public final class PriceManager {
 
     public Map<Material, Map<String, Double>> allResolved() {
         return resolvedCache;
+    }
+
+    public String getCategory(Material material) {
+        return materialCategories.getOrDefault(material, "");
+    }
+
+    public Set<Material> getMaterialsByCategory(String category) {
+        String cat = category.toLowerCase();
+        Set<Material> result = new HashSet<>();
+        for (Map.Entry<Material, String> entry : materialCategories.entrySet()) {
+            if (entry.getValue().equals(cat)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    public Set<String> getAllCategories() {
+        return new HashSet<>(materialCategories.values());
     }
 }

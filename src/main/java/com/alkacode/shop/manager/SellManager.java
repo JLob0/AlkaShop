@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Nucleo da venda: computa totais, deposita via AlkaEconomy, dispara ItemSellEvent
@@ -51,6 +52,41 @@ public final class SellManager {
         for (int slot : slots) {
             ItemStack item = inventory.getItem(slot);
             if (item != null && priceManager.isSellable(item.getType())) {
+                toSell.add(item.clone());
+                soldSlots.add(slot);
+            }
+        }
+        if (toSell.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<String, Double> totals = sell(player, toSell, SellType.ALL);
+        if (!totals.isEmpty()) {
+            for (int slot : soldSlots) {
+                inventory.setItem(slot, null);
+            }
+        }
+        return totals;
+    }
+
+    /** /vendertudo <categoria> - varre e remove so os itens vendaveis dessa categoria do inventario. */
+    public Map<String, Double> sellAllByCategory(Player player, String category) {
+        Set<Material> catMaterials = priceManager.getMaterialsByCategory(category);
+        if (catMaterials.isEmpty()) {
+            return Map.of();
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        boolean sellArmor = configManager.config().getBoolean("selling.sell-armor", false);
+        boolean sellOffhand = configManager.config().getBoolean("selling.sell-offhand", true);
+        boolean sellHotbar = configManager.config().getBoolean("selling.sell-hotbar", true);
+
+        List<Integer> slots = InventoryUtil.sellableSlots(inventory, sellArmor, sellOffhand, sellHotbar);
+        List<ItemStack> toSell = new ArrayList<>();
+        List<Integer> soldSlots = new ArrayList<>();
+        for (int slot : slots) {
+            ItemStack item = inventory.getItem(slot);
+            if (item != null && catMaterials.contains(item.getType()) && priceManager.isSellable(item.getType())) {
                 toSell.add(item.clone());
                 soldSlots.add(slot);
             }

@@ -2,6 +2,10 @@
 # Configure o "pai" (bloco) e o plugin calcula o "filho" (item) automaticamente via
 # receitas de crafting reversiveis (9x/4x item -> 1 bloco). Ou configure o item direto.
 # Material sem entrada aqui = nao vendavel.
+#
+# "category" (opcional) agrupa materiais pra /vendertudo <categoria>, pro filtro do
+# menu de auto-venda (/venderautomatico) e pras permissoes alkashop.autosell.<categoria>.
+# Nao precisa em todo material - so onde fizer sentido categorizar.
 
 prices:
   # ============================================
@@ -9,52 +13,72 @@ prices:
   # ============================================
   DIAMOND_BLOCK:
     coins: 450.0
+    category: minerios
   IRON_BLOCK:
     coins: 900.0
+    category: minerios
   GOLD_BLOCK:
     coins: 810.0
+    category: minerios
   EMERALD_BLOCK:
     coins: 1350.0
+    category: minerios
   NETHERITE_BLOCK:
     coins: 45000.0
+    category: minerios
   COPPER_BLOCK:
     coins: 540.0
+    category: minerios
   RAW_IRON_BLOCK:
     coins: 720.0
+    category: minerios
   RAW_GOLD_BLOCK:
     coins: 648.0
+    category: minerios
   RAW_COPPER_BLOCK:
     coins: 432.0
+    category: minerios
 
   # ============================================
   # REDSTONE / LAPIS / CARVAO (configurados pelo bloco)
   # ============================================
   REDSTONE_BLOCK:
     coins: 315.0
+    category: minerios
   LAPIS_BLOCK:
     coins: 200.0
+    category: minerios
   COAL_BLOCK:
     coins: 162.0
+    category: minerios
 
   # ============================================
   # PEDRAS / CONSTRUCAO (preco direto)
   # ============================================
   STONE:
     coins: 2.0
+    category: minerios
   COBBLESTONE:
     coins: 1.0
+    category: minerios
   COBBLED_DEEPSLATE:
     coins: 1.5
+    category: minerios
   DEEPSLATE:
     coins: 3.0
+    category: minerios
   GRANITE:
     coins: 1.0
+    category: minerios
   DIORITE:
     coins: 1.0
+    category: minerios
   ANDESITE:
     coins: 1.0
+    category: minerios
   SANDSTONE:
     coins: 2.0
+    category: minerios
 
   # ============================================
   # TERRACOTAS / TERRAS (preco direto)
@@ -77,40 +101,56 @@ prices:
   # ============================================
   OAK_LOG:
     coins: 4.0
+    category: madeira
   BIRCH_LOG:
     coins: 4.0
+    category: madeira
   SPRUCE_LOG:
     coins: 5.0
+    category: madeira
   DARK_OAK_LOG:
     coins: 6.0
+    category: madeira
   JUNGLE_LOG:
     coins: 5.0
+    category: madeira
   ACACIA_LOG:
     coins: 5.0
+    category: madeira
   MANGROVE_LOG:
     coins: 6.0
+    category: madeira
   CHERRY_LOG:
     coins: 8.0
+    category: madeira
 
   # ============================================
   # COMIDA / AGRICULTURA (preco direto)
   # ============================================
   WHEAT:
     coins: 2.0
+    category: fazenda
   CARROT:
     coins: 2.0
+    category: fazenda
   POTATO:
     coins: 2.0
+    category: fazenda
   BEETROOT:
     coins: 2.0
+    category: fazenda
   COOKED_BEEF:
     coins: 15.0
+    category: fazenda
   COOKED_PORKCHOP:
     coins: 15.0
+    category: fazenda
   COOKED_CHICKEN:
     coins: 12.0
+    category: fazenda
   BREAD:
     coins: 10.0
+    category: fazenda
 
   # ============================================
   # MULTIPLAS MOEDAS (exemplo)
@@ -118,12 +158,15 @@ prices:
   EMERALD:
     coins: 150.0
     escarion: 3.0
+    category: minerios
   NETHERITE_INGOT:
     coins: 5000.0
     escarion: 50.0
+    category: minerios
   DIAMOND:
     coins: 50.0
     escarion: 1.0
+    category: minerios
 
   # ============================================
   # ITENS QUE NAO VENDEM (sem preco = nao vendavel)

@@ -127,10 +127,13 @@ public final class ShopAdminCommand implements CommandExecutor {
         }
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
         PlayerShopData data = services.playerDataManager.get(target.getUniqueId());
-        data.autoSellEnabled(!data.autoSellEnabled());
+        data.autoSellAll(!data.autoSellAll());
+        if (data.autoSellAll()) {
+            data.clearMaterials();
+        }
         services.playerDataManager.save(data);
         sender.sendMessage(TextUtil.parse(services.configManager.prefix() + services.configManager.message("admin.toggle-success"), Map.of(
-                "name", String.valueOf(target.getName()), "status", data.autoSellEnabled() ? "ATIVADA" : "DESATIVADA")));
+                "name", String.valueOf(target.getName()), "status", data.autoSellAll() ? "ATIVADA" : "DESATIVADA")));
         return true;
     }
 
@@ -148,10 +151,13 @@ public final class ShopAdminCommand implements CommandExecutor {
         boolean round = services.configManager.config().getBoolean("selling.round-values", true);
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
 
+        String autoSellStatus = data.autoSellAll() ? "TODOS"
+                : data.autoSellMaterials().isEmpty() ? "DESATIVADA" : data.autoSellMaterials().size() + " ITENS";
+
         sender.sendMessage(TextUtil.parse(services.configManager.message("admin.info-header"),
                 Map.of("name", String.valueOf(target.getName()))));
         for (var line : TextUtil.parseLines(services.configManager.message("admin.info-line"), Map.of(
-                "autosell", data.autoSellEnabled() ? "ATIVADA" : "DESATIVADA",
+                "autosell", autoSellStatus,
                 "coins", PriceFormatter.format(data.totalSoldCoins(), round, decimals),
                 "escarion", PriceFormatter.format(data.totalSoldEscarion(), round, decimals),
                 "items", String.valueOf(data.totalItemsSold()),

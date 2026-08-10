@@ -41,12 +41,14 @@ main-menu:
       material: EMERALD_BLOCK
       name: "<green>Auto-Venda: <white><status>"
       lore:
-        - "<gray>Venda automatica ao coletar itens."
-        - "<gray>Requer permissao VIP."
+        - "<gray>Configure quais itens serao"
+        - "<gray>vendidos automaticamente."
+        - ""
+        - "<gray>Status atual: <white><status>"
         - ""
         - "<yellow>Acesso rapido: <white>/venderautomatico"
         - ""
-        - "<green>Clique para <toggle>."
+        - "<green>Clique para configurar."
 
 virtual-chest:
   title: "<dark_gray>Coloque os itens para vender"

@@ -29,11 +29,11 @@ public final class PlayerPickupListener implements Listener {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
-        if (!AutoSellSupport.isActive(services, player)) {
+        ItemStack item = event.getItem().getItemStack();
+        if (!AutoSellSupport.isActive(services, player, item.getType())) {
             return;
         }
 
-        ItemStack item = event.getItem().getItemStack();
         if (!services.priceManager.isSellable(item.getType())) {
             return;
         }

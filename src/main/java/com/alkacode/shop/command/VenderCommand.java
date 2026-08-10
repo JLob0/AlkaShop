@@ -1,6 +1,7 @@
 package com.alkacode.shop.command;
 
 import com.alkacode.shop.ShopServices;
+import com.alkacode.shop.menu.AutoSellConfigMenu;
 import com.alkacode.shop.menu.MainSellMenu;
 import com.alkacode.shop.menu.VirtualSellMenu;
 import com.alkacode.shop.model.PlayerShopData;
@@ -39,10 +40,16 @@ public final class VenderCommand implements CommandExecutor {
 
         switch (command.getName().toLowerCase()) {
             case "vender" -> new MainSellMenu(player, services).open();
-            case "vendertudo" -> sellAll(player);
+            case "vendertudo" -> {
+                if (args.length >= 1) {
+                    sellCategory(player, args[0]);
+                } else {
+                    sellAll(player);
+                }
+            }
             case "vendermao" -> sellHand(player);
             case "vendersel" -> new VirtualSellMenu(player, services).open();
-            case "venderautomatico" -> toggleAutoSell(player);
+            case "venderautomatico" -> handleAutoSell(player, args);
             default -> {
                 return false;
             }
@@ -59,6 +66,15 @@ public final class VenderCommand implements CommandExecutor {
         services.sendMessage(player, "sell.sold-all", Map.of("totals", formatTotals(totals)));
     }
 
+    private void sellCategory(Player player, String category) {
+        Map<String, Double> totals = services.sellManager.sellAllByCategory(player, category);
+        if (totals.isEmpty()) {
+            services.sendMessage(player, "sell.no-items-category", Map.of("category", category));
+            return;
+        }
+        services.sendMessage(player, "sell.sold-category", Map.of("category", category, "totals", formatTotals(totals)));
+    }
+
     private void sellHand(Player player) {
         String itemName = player.getInventory().getItemInMainHand().getType().name();
         Map<String, Double> totals = services.sellManager.sellHand(player);
@@ -69,16 +85,56 @@ public final class VenderCommand implements CommandExecutor {
         services.sendMessage(player, "sell.sold-hand", Map.of("item", itemName, "totals", formatTotals(totals)));
     }
 
-    private void toggleAutoSell(Player player) {
+    private void handleAutoSell(Player player, String[] args) {
         if (!player.hasPermission("alkashop.autosell")) {
             services.sendMessage(player, "general.no-permission", Map.of());
             return;
         }
+
         PlayerShopData data = services.playerDataManager.get(player);
-        data.autoSellEnabled(!data.autoSellEnabled());
-        services.playerDataManager.save(data);
-        String path = data.autoSellEnabled() ? "sell.auto-sell-enabled" : "sell.auto-sell-disabled";
-        services.sendMessage(player, path, Map.of());
+
+        if (args.length == 0) {
+            new AutoSellConfigMenu(player, services).open();
+            return;
+        }
+
+        switch (args[0].toLowerCase()) {
+            case "todos", "all" -> {
+                if (!player.hasPermission("alkashop.autosell.all")) {
+                    services.sendMessage(player, "general.no-permission", Map.of());
+                    return;
+                }
+                data.autoSellAll(!data.autoSellAll());
+                if (data.autoSellAll()) {
+                    data.clearMaterials();
+                }
+                services.playerDataManager.save(data);
+                services.sendMessage(player, data.autoSellAll() ? "sell.auto-sell-all-enabled" : "sell.auto-sell-all-disabled", Map.of());
+            }
+            case "nenhum", "none", "limpar" -> {
+                data.autoSellAll(false);
+                data.clearMaterials();
+                services.playerDataManager.save(data);
+                services.sendMessage(player, "sell.auto-sell-cleared", Map.of());
+            }
+            default -> {
+                Material material = Material.matchMaterial(args[0].toUpperCase());
+                if (material == null || !services.priceManager.isSellable(material)) {
+                    services.sendMessage(player, "sell.unknown-material", Map.of("material", args[0]));
+                    return;
+                }
+                String category = services.priceManager.getCategory(material);
+                if (!category.isBlank() && !player.hasPermission("alkashop.autosell." + category)) {
+                    services.sendMessage(player, "general.no-permission", Map.of());
+                    return;
+                }
+                data.toggleMaterial(material);
+                services.playerDataManager.save(data);
+                boolean enabled = data.isAutoSellEnabled(material);
+                services.sendMessage(player, enabled ? "sell.auto-sell-material-enabled" : "sell.auto-sell-material-disabled",
+                        Map.of("material", material.name()));
+            }
+        }
     }
 
     private boolean handlePriceInfo(CommandSender sender, String[] args) {

@@ -27,12 +27,23 @@ public interface AlkaShopAPI {
     CompletableFuture<ShopPlayerStats> getStats(UUID playerUuid);
 
     /**
-     * true se a auto-venda deveria se aplicar a este jogador agora - considera
-     * force-autosell, o toggle pessoal (/venderautomatico) e a permissao
-     * alkashop.autosell. Pensado pra integracoes de terceiros (ex: AlkaMines) que
-     * dao itens diretamente ao jogador e querem respeitar a auto-venda sem
-     * conhecer nenhum preco (a mina nunca sabe o preco de nada, so pergunta "devo
-     * vender isso pra este jogador?").
+     * true se o jogador tiver auto-venda ativa em QUALQUER capacidade agora (tudo
+     * ligado, ou pelo menos um material especifico escolhido) - considera
+     * force-autosell e a permissao alkashop.autosell. Uso pensado pra integracoes de
+     * terceiros que so querem saber "esse jogador usa auto-venda?" sem material
+     * especifico em maos ainda. Pra decidir se um DROP especifico deve ser vendido,
+     * prefira {@link #isAutoSellActive(Player, Material)}.
      */
     boolean isAutoSellActive(Player player);
+
+    /**
+     * true se a auto-venda deveria se aplicar a este jogador para ESTE material agora -
+     * considera force-autosell, o toggle "vender tudo", o material especifico escolhido
+     * (/venderautomatico <material>), a permissao alkashop.autosell e a permissao de
+     * categoria (alkashop.autosell.<categoria>, se o material tiver uma). Pensado pra
+     * integracoes de terceiros (ex: AlkaMines) que dao itens diretamente ao jogador e
+     * querem respeitar a auto-venda sem conhecer nenhum preco (a mina nunca sabe o
+     * preco de nada, so pergunta "devo vender isso pra este jogador?").
+     */
+    boolean isAutoSellActive(Player player, Material material);
 }

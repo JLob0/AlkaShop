@@ -49,7 +49,7 @@ public final class PlaceholderAPIHook extends PlaceholderExpansion {
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
 
         return switch (params) {
-            case "autosell" -> String.valueOf(data.autoSellEnabled());
+            case "autosell" -> String.valueOf(data.autoSellAll());
             case "total_sold_coins" -> PriceFormatter.format(data.totalSoldCoins(), round, decimals);
             case "total_sold_escarion" -> PriceFormatter.format(data.totalSoldEscarion(), round, decimals);
             case "total_items" -> String.valueOf(data.totalItemsSold());

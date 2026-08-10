@@ -61,7 +61,26 @@ public final class AlkaShopAPIProvider implements AlkaShopAPI {
         if (configManager.config().getBoolean("force-autosell", false)) {
             return true;
         }
+        if (!player.hasPermission("alkashop.autosell")) {
+            return false;
+        }
         PlayerShopData data = playerDataManager.get(player.getUniqueId());
-        return data.autoSellEnabled() && player.hasPermission("alkashop.autosell");
+        return data.autoSellAll() || !data.autoSellMaterials().isEmpty();
+    }
+
+    @Override
+    public boolean isAutoSellActive(Player player, Material material) {
+        if (configManager.config().getBoolean("force-autosell", false)) {
+            return true;
+        }
+        if (!player.hasPermission("alkashop.autosell")) {
+            return false;
+        }
+        String category = priceManager.getCategory(material);
+        if (!category.isBlank() && !player.hasPermission("alkashop.autosell." + category)) {
+            return false;
+        }
+        PlayerShopData data = playerDataManager.get(player.getUniqueId());
+        return data.isAutoSellEnabled(material);
     }
 }

@@ -29,11 +29,11 @@ public final class DropCollectedListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onDropCollected(DropCollectedEvent event) {
         Player player = event.getPlayer();
-        if (!AutoSellSupport.isActive(services, player)) {
+        ItemStack item = event.getItem();
+        if (!AutoSellSupport.isActive(services, player, item.getType())) {
             return;
         }
 
-        ItemStack item = event.getItem();
         if (!services.priceManager.isSellable(item.getType())) {
             return;
         }

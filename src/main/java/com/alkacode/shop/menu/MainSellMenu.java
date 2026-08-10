@@ -44,16 +44,14 @@ public final class MainSellMenu extends AbstractShopMenu {
 
         if (viewer.hasPermission("alkashop.autosell")) {
             PlayerShopData data = services.playerDataManager.get(viewer);
-            boolean enabled = data.autoSellEnabled();
-            Map<String, String> placeholders = Map.of(
-                    "status", enabled ? "ATIVADA" : "DESATIVADA",
-                    "toggle", enabled ? "desativar" : "ativar"
-            );
+            boolean allEnabled = data.autoSellAll();
+            int activeCount = data.autoSellMaterials().size();
+            String statusText = allEnabled ? "TODOS ATIVOS" : (activeCount > 0 ? activeCount + " ITENS" : "DESATIVADO");
+
+            Map<String, String> placeholders = Map.of("status", statusText);
             placeButton(items.getConfigurationSection("auto-sell"), placeholders, e -> {
-                data.autoSellEnabled(!data.autoSellEnabled());
-                services.playerDataManager.save(data);
                 viewer.closeInventory();
-                new MainSellMenu(viewer, services).open();
+                new AutoSellConfigMenu(viewer, services).open();
             });
         }
     }
