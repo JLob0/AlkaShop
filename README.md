@@ -1,11 +1,18 @@
+<div align="center">
+
 # AlkaShop
 
-> Sistema universal de vendas, com preços justos calculados via receitas de crafting
+### Sistema universal de vendas da rede AlkaStudio
+
+Preços globais por material, múltiplas moedas simultâneas e venda automática
+configurável por jogador — construído sobre o AlkaCore.
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.21.8-green)
 ![Version](https://img.shields.io/badge/Version-1.0.13-blue)
 ![License](https://img.shields.io/badge/License-Proprietary-red)
+
+</div>
 
 ---
 
