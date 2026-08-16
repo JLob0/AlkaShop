@@ -1,50 +1,103 @@
 # AlkaShop
 
-Sistema universal de vendas para a rede Alka* (Paper 1.21.8 / Java 21). Preço é
-global por `Material` — nunca por mina, nunca por plugin — e é o único plugin da
-rede que sabe "quanto vale" um item.
+> Sistema universal de vendas, com preços justos calculados via receitas de crafting
 
-## O que faz
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21.8-green)
+![Version](https://img.shields.io/badge/Version-1.0.13-blue)
+![License](https://img.shields.io/badge/License-Proprietary-red)
 
-- **Preços globais por material**, configurados em `prices.yml`, com suporte a
-  múltiplas moedas simultâneas via AlkaEconomy (ex: um item pode valer coins **e**
-  drakonio ao mesmo tempo).
-- **Cálculo automático de proporção via receita de crafting**: itens sem preço
-  definido podem herdar valor proporcional aos seus ingredientes (ex: um bloco de
-  ferro vale ~9x o preço do lingote, sem precisar cadastrar preço manualmente).
-- **GUI principal de vendas** (`/vender`) e **baú virtual de venda selecionada**
-  (`/vendersel`) — dropa item(s) ali dentro pra vender sem abrir o inventário todo.
-- **Venda automática por material/categoria (auto-sell)**, restrita a jogadores
-  com a permissão `alkashop.autosell` (pensado pra VIPs) — não é mais um único
-  toggle global: o jogador liga "tudo" (`/venderautomatico todos`, requer
-  `alkashop.autosell.all`) ou escolhe material a material
-  (`/venderautomatico <material>`, permissão de categoria opcional
-  `alkashop.autosell.<categoria>` se o material tiver uma em `prices.yml`) via
-  `/venderautomatico` (abre `AutoSellConfigMenu`, com filtro por categoria).
-- **Vender tudo / por categoria / item na mão** (`/vendertudo [categoria]`,
-  `/vendermao`) pra fluxo rápido sem abrir GUI.
-- **API pública** (`AlkaShopAPI`) publicada via `ServicesManager`, consumida por
-  outros plugins Alka* (ex: AlkaMines, AlkaDrop) via soft-dependency —
-  `isAutoSellActive(player, material)` (material-aware, respeita a escolha por
-  categoria) e `sellItem(...)` permitem que um bloco minerado seja vendido
-  automaticamente sem esse outro plugin nunca precisar saber o preço de nada, só
-  perguntar "devo vender isso pra este jogador?". `isAutoSellActive(player)`
-  (sem material) continua existindo pra compatibilidade — responde "tem auto-venda
-  em qualquer capacidade" sem saber o material específico.
-- Eventos próprios (`ItemSellEvent`, `PriceLookupEvent`) pra quem quiser reagir a
-  vendas ou interceptar/ajustar um preço.
-- Hook opcional de **PlaceholderAPI** e integração com **AlkaDrop** (coleta
-  automática de drops).
-- Comandos administrativos (`/alkashop reload|setprice|removeprice|debug|toggle|info`)
-  pra gerenciar preços e configuração sem reiniciar o servidor.
+---
 
-## Dependências
+## 📋 Sobre o Projeto
 
-- **AlkaEconomy** (hard dependency) — todas as moedas vêm de lá.
-- PlaceholderAPI e AlkaDrop são soft-dependencies opcionais.
+O **AlkaShop** é o sistema de vendas da rede AlkaStudio: preços globais por
+material, cálculo inteligente de proporções via receitas de crafting (um
+bloco vale 9× o minério, por exemplo) e suporte a múltiplas moedas via
+AlkaEconomy. É o único plugin da rede que sabe preço — AlkaMines e AlkaDrop
+apenas consultam a API dele.
 
-## Arquitetura
+## ✨ Funcionalidades Principais
 
-Faz parte de uma divisão em 3 plugins junto com AlkaMines e AlkaDrop: AlkaMines
-cuida só de minerar/resetar blocos, AlkaDrop cuida de coleta/condensação de itens,
-e o AlkaShop é o único que sabe preço — os outros dois só chamam a API dele.
+- 🛒 **GUI de vendas**: venda por categoria, inventário inteiro ou item na mão.
+- 📦 **Baú virtual de venda selecionada**: escolha exatamente o que vender
+  antes de confirmar.
+- ⚙️ **Venda automática configurável**: ativa por material ou categoria,
+  benefício de VIP.
+- 🧮 **Preços calculados por receita**: proporções derivadas das receitas de
+  crafting do próprio servidor, sem precisar cadastrar preço um por um.
+- 💰 **Múltiplas moedas**: preços e pagamentos via AlkaEconomy.
+- 🔍 **Consulta de preço**: veja o valor de qualquer material a qualquer momento.
+
+## 🎮 Comandos
+
+| Comando | Descrição | Permissão |
+|---------|-----------|-----------|
+| `/vender` | Abre a GUI principal de vendas | `alkashop.use` |
+| `/vendertudo [categoria]` | Vende todo o inventário, ou só uma categoria | `alkashop.use` |
+| `/vendermao` | Vende o item na mão principal | `alkashop.use` |
+| `/vendersel` | Abre o baú virtual de venda selecionada | `alkashop.use` |
+| `/venderautomatico [todos\|nenhum\|<material>]` (`autosell`) | Configura a venda automática por material/categoria (VIP) | `alkashop.autosell` |
+| `/venderpreco <material>` | Vê o preço de um material | `alkashop.use` |
+| `/alkashop <reload\|setprice\|removeprice\|gui\|debug\|toggle\|info>` | Comando administrativo | `alkashop.admin.reload` |
+
+## 🔗 Integrações
+
+Construído sobre o **AlkaEconomy**. Parte de uma divisão em 3 plugins junto
+com **AlkaMines** (mineração) e **AlkaDrop** (coleta/condensação) — os dois
+consomem a API do AlkaShop para vender automaticamente. Integra-se também
+com **AlkaVips** (limites de auto-venda por tier), **AlkaRankUp** e
+**PlaceholderAPI**.
+
+## 🔧 Tecnologias Utilizadas
+
+- **Java 21**
+- **Paper API 1.21.8**
+- **AlkaEconomy**
+- **MiniMessage** para formatação de texto
+
+## ⚙️ Instalação
+
+1. Baixe o `AlkaShop.jar` mais recente.
+2. Coloque na pasta `plugins/` do servidor.
+3. Certifique-se de ter o **AlkaEconomy** instalado (dependência obrigatória).
+4. Reinicie o servidor.
+5. Ajuste preços em `plugins/AlkaShop/prices.yml` ou via `/alkashop setprice`.
+
+## 🔐 Permissões
+
+| Permissão | Descrição | Padrão |
+|-----------|-----------|--------|
+| `alkashop.use` | Permite usar comandos de venda | true |
+| `alkashop.autosell` | Permite ativar venda automática (VIP) | false |
+| `alkashop.autosell.all` | Auto-venda para todos os itens de uma vez | false |
+| `alkashop.autosell.minerios` | Auto-vender materiais da categoria minérios | false |
+| `alkashop.autosell.fazenda` | Auto-vender materiais da categoria fazenda | false |
+| `alkashop.autosell.madeira` | Auto-vender materiais da categoria madeira | false |
+| `alkashop.admin.reload` | Recarregar config/preços | op |
+| `alkashop.admin.setprice` | Definir/remover preços | op |
+| `alkashop.admin.debug` | Modo debug | op |
+| `alkashop.admin.others` | Controlar configuração de outros jogadores | op |
+| `alkashop.admin.info` | Ver estatísticas de outros jogadores | op |
+
+## 📝 Licença
+
+> ⚠️ **Projeto proprietário da AlkaStudio.**
+>
+> Código fonte destinado exclusivamente ao uso interno da rede `Alka*`.
+> Reprodução, distribuição ou uso não autorizado não são permitidos.
+
+## 🎯 Créditos
+
+- **Desenvolvido por**: MestreDEV — AlkaStudio
+- **Parte do ecossistema**: `Alka*`
+
+---
+
+<div align="center">
+
+**Desenvolvido com ❤️ pela AlkaStudio**
+
+[![AlkaStudio](https://img.shields.io/badge/AlkaStudio-JLob0-blue)](https://github.com/JLob0)
+
+</div>
