@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.alkacode"
-version = "1.0.3"
+version = "1.0.13"
 
 java {
     toolchain {
@@ -28,7 +28,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     // AlkaCore e necessario tambem porque AlkaEconomyPlugin agora estende
     // com.alkacode.core.plugin.AlkaPlugin (o javac precisa da hierarquia completa).
-    compileOnly("com.alkacode:AlkaCore:1.0.0")
+    compileOnly("com.alkacode:AlkaCore:1.0.3")
     compileOnly("com.alkacode:AlkaEconomy:1.0.5")
     // integracao soft - so escuta DropCollectedEvent se o plugin estiver instalado
     // (publicado via `./gradlew publishToMavenLocal` no projeto AlkaDrop).
@@ -56,7 +56,11 @@ tasks.processResources {
     // sem isso, o Gradle nao percebe que so `version` mudou e reusa o plugin.yml
     // antigo do cache (processResources fica UP-TO-DATE incorretamente).
     inputs.property("version", project.version)
-    expand("version" to project.version)
+    filesMatching("plugin.yml") {
+
+        expand("version" to project.version)
+
+    }
 }
 
 // publica o jar "puro" no repositorio Maven local, para o AlkaMines consumir
