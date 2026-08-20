@@ -15,7 +15,17 @@ public final class ShopMenuListener implements Listener {
             return;
         }
         boolean clickedTop = event.getClickedInventory() == event.getInventory();
-        if (clickedTop && menu.isInteractiveSlot(event.getSlot())) {
+        if (!clickedTop) {
+            // Clique no inventario do PROPRIO jogador - so cancela se o menu nao pediu pra
+            // liberar (ver ShopMenu#allowsBottomInventoryClicks). Cancelar aqui sempre
+            // impediria ate o primeiro clique que pega o item pro cursor, e nenhum menu
+            // conseguiria receber item arrastado do inventario do jogador.
+            if (!menu.allowsBottomInventoryClicks()) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+        if (menu.isInteractiveSlot(event.getSlot())) {
             return;
         }
         event.setCancelled(true);

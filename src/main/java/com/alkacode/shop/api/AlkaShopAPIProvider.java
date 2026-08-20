@@ -7,6 +7,7 @@ import com.alkacode.shop.manager.SellManager;
 import com.alkacode.shop.model.PlayerShopData;
 import com.alkacode.shop.model.ShopPlayerStats;
 import com.alkacode.shop.model.enums.SellType;
+import com.alkacode.shop.util.AutoSellNotifier;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,5 +83,10 @@ public final class AlkaShopAPIProvider implements AlkaShopAPI {
         }
         PlayerShopData data = playerDataManager.get(player.getUniqueId());
         return data.isAutoSellEnabled(material);
+    }
+
+    @Override
+    public void notifyAutoSell(Player player, Map<String, Double> totals) {
+        AutoSellNotifier.notify(configManager, player, totals);
     }
 }

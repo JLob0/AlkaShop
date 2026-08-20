@@ -1,7 +1,7 @@
 package com.alkacode.shop.manager;
 
 import com.alkacode.shop.model.PlayerShopData;
-import com.alkacode.shop.storage.DatabaseManager;
+import com.alkacode.shop.storage.AlkaShopRepository;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class PlayerDataManager {
 
-    private final DatabaseManager database;
+    private final AlkaShopRepository database;
     private final Map<UUID, PlayerShopData> cache = new ConcurrentHashMap<>();
 
-    public PlayerDataManager(DatabaseManager database) {
+    public PlayerDataManager(AlkaShopRepository database) {
         this.database = database;
     }
 
@@ -38,5 +38,14 @@ public final class PlayerDataManager {
 
     public void save(PlayerShopData data) {
         database.save(data);
+    }
+
+    /** So pro onDisable: o scheduler async do AlkaCore para de aceitar tarefas nesse ponto,
+     * entao salva sincrono direto em vez de database.save() (que e fire-and-forget async). */
+    public void saveAllSync() {
+        for (PlayerShopData data : cache.values()) {
+            database.saveSync(data);
+        }
+        cache.clear();
     }
 }

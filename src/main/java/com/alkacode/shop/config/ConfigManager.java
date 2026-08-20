@@ -41,6 +41,14 @@ public final class ConfigManager {
             if (in != null) {
                 loaded.setDefaults(YamlConfiguration.loadConfiguration(
                         new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)));
+                // getConfigurationSection() so enxerga secoes que ja existem fisicamente no
+                // arquivo em disco - uma secao que so existe nos defaults (ex: jogador com
+                // menus.yml antigo apos update do plugin) volta como secao VAZIA, nao null,
+                // entao qualquer leitura aninhada dentro dela silenciosamente da default/-1.
+                // copyDefaults + save grava as chaves novas no arquivo do servidor sem
+                // sobrescrever o que o admin ja customizou.
+                loaded.options().copyDefaults(true);
+                loaded.save(file);
             }
         } catch (java.io.IOException e) {
             plugin.getLogger().warning("Falha ao carregar defaults de " + name + ": " + e.getMessage());
@@ -65,5 +73,14 @@ public final class ConfigManager {
 
     public List<String> messageList(String path) {
         return messages.getStringList(path);
+    }
+
+    /** Tag MiniMessage de cor pra essa moeda em selling.currency-colors, ou o "default" configurado la se nao tiver entrada especifica. */
+    public String currencyColor(String currencyId) {
+        String path = "currency-colors." + currencyId;
+        if (config.contains(path)) {
+            return config.getString(path);
+        }
+        return config.getString("currency-colors.default", "<white>");
     }
 }

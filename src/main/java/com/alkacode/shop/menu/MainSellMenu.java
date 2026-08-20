@@ -5,10 +5,13 @@ import com.alkacode.shop.model.PlayerShopData;
 import com.alkacode.shop.util.ItemUtil;
 import com.alkacode.shop.util.PriceFormatter;
 import com.alkacode.shop.util.TextUtil;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -42,18 +45,55 @@ public final class MainSellMenu extends AbstractShopMenu {
             sellHand();
         });
 
-        if (viewer.hasPermission("alkashop.autosell")) {
-            PlayerShopData data = services.playerDataManager.get(viewer);
-            boolean allEnabled = data.autoSellAll();
-            int activeCount = data.autoSellMaterials().size();
-            String statusText = allEnabled ? "TODOS ATIVOS" : (activeCount > 0 ? activeCount + " ITENS" : "DESATIVADO");
+        buildAutoSellButton(items.getConfigurationSection("auto-sell"));
+    }
 
-            Map<String, String> placeholders = Map.of("status", statusText);
-            placeButton(items.getConfigurationSection("auto-sell"), placeholders, e -> {
-                viewer.closeInventory();
+    /** Sempre visivel (mesmo sem permissao) pra anunciar o recurso, igual o padrao ja usado no /drop - bloqueado mostra a tag de tier em vez de esconder o botao inteiro. */
+    private void buildAutoSellButton(ConfigurationSection section) {
+        boolean unlocked = viewer.hasPermission("alkashop.autosell");
+        PlayerShopData data = services.playerDataManager.get(viewer);
+        boolean allEnabled = data.autoSellAll();
+        int activeCount = data.autoSellMaterials().size();
+        String statusText = !unlocked ? "BLOQUEADO"
+                : allEnabled ? "TODOS ATIVOS" : (activeCount > 0 ? activeCount + " ITENS" : "DESATIVADO");
+
+        Map<String, String> placeholders = Map.of(
+                "status", statusText,
+                "breakdown", unlocked ? categoryBreakdown(data) : "",
+                "tier", services.vipTierTag(),
+                "action", unlocked ? "Clique para configurar." : "Clique para saber mais."
+        );
+        placeButton(section, placeholders, e -> {
+            viewer.closeInventory();
+            if (unlocked) {
                 new AutoSellConfigMenu(viewer, services).open();
-            });
+            } else {
+                services.sendMessage(viewer, "general.no-permission", Map.of());
+            }
+        });
+    }
+
+    /** "Minerios: 3, Fazenda: 2" - so as categorias (definidas no auto-sell-hub) que tem pelo menos 1 item ativo. */
+    private String categoryBreakdown(PlayerShopData data) {
+        ConfigurationSection categories = services.configManager.menus().getConfigurationSection("auto-sell-hub.categories");
+        if (categories == null) {
+            return "";
         }
+        List<String> parts = new ArrayList<>();
+        for (String category : categories.getKeys(false)) {
+            int active = 0;
+            for (Material mat : services.priceManager.allResolved().keySet()) {
+                String matCategory = services.priceManager.getCategory(mat);
+                boolean matches = "outros".equals(category) ? matCategory.isBlank() : matCategory.equals(category);
+                if (matches && data.isAutoSellEnabled(mat)) {
+                    active++;
+                }
+            }
+            if (active > 0) {
+                parts.add(category.substring(0, 1).toUpperCase() + category.substring(1) + ": " + active);
+            }
+        }
+        return String.join(", ", parts);
     }
 
     private void placeButton(ConfigurationSection section, Map<String, String> placeholders,
@@ -77,7 +117,8 @@ public final class MainSellMenu extends AbstractShopMenu {
         }
         boolean round = services.configManager.config().getBoolean("selling.round-values", true);
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
-        services.sendMessage(viewer, "sell.sold-all", Map.of("totals", PriceFormatter.formatTotals(totals, round, decimals)));
+        services.sendMessage(viewer, "sell.sold-all", Map.of("totals",
+                PriceFormatter.formatTotals(totals, round, decimals, services.configManager::currencyColor)));
     }
 
     private void sellHand() {
@@ -91,6 +132,6 @@ public final class MainSellMenu extends AbstractShopMenu {
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
         services.sendMessage(viewer, "sell.sold-hand", Map.of(
                 "item", itemName,
-                "totals", PriceFormatter.formatTotals(totals, round, decimals)));
+                "totals", PriceFormatter.formatTotals(totals, round, decimals, services.configManager::currencyColor)));
     }
 }

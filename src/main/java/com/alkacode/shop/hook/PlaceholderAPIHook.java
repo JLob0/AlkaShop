@@ -61,7 +61,7 @@ public final class PlaceholderAPIHook extends PlaceholderExpansion {
     private String resolvePrice(String rest) {
         Material material = Material.matchMaterial(rest);
         if (material != null) {
-            return formatPrice(material, "coins");
+            return formatPrice(material, "gold");
         }
         int lastUnderscore = rest.lastIndexOf('_');
         if (lastUnderscore <= 0) {

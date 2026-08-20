@@ -2,6 +2,7 @@ package com.alkacode.shop.util;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,6 +26,11 @@ public final class ItemUtil {
         if (section.contains("lore")) {
             meta.lore(TextUtil.parseList(section.getStringList("lore"), placeholders));
         }
+        // Sem isso, icones de botao que usam material de ferramenta/arma (ex: IRON_PICKAXE
+        // pra representar a categoria "Minerios") ganham de graca as linhas vanilla "When in
+        // Main Hand: X Attack Damage" no tooltip - o item e so um botao, nunca vai ser
+        // empunhado de verdade.
+        meta.addItemFlags(ItemFlag.values());
         item.setItemMeta(meta);
         return item;
     }

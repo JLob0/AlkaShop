@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.alkacode"
-version = "1.0.13"
+version = "1.0.16"
 
 java {
     toolchain {
@@ -29,7 +29,7 @@ dependencies {
     // AlkaCore e necessario tambem porque AlkaEconomyPlugin agora estende
     // com.alkacode.core.plugin.AlkaPlugin (o javac precisa da hierarquia completa).
     compileOnly("com.alkacode:AlkaCore:1.0.3")
-    compileOnly("com.alkacode:AlkaEconomy:1.0.5")
+    compileOnly("com.alkacode:AlkaEconomy:1.0.8")
     // integracao soft - so escuta DropCollectedEvent se o plugin estiver instalado
     // (publicado via `./gradlew publishToMavenLocal` no projeto AlkaDrop).
     compileOnly("com.alkacode:AlkaDrop:1.0.1")

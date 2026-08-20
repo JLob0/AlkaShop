@@ -46,4 +46,17 @@ public interface AlkaShopAPI {
      * preco de nada, so pergunta "devo vender isso pra este jogador?").
      */
     boolean isAutoSellActive(Player player, Material material);
+
+    /**
+     * Notifica o jogador de uma venda automatica (actionbar + som) do jeito que ele
+     * configurou em config.yml/messages.yml (auto-sell.actionbar, auto-sell.sound,
+     * sell.sold-auto) - MESMO comportamento e config de qualquer auto-venda feita
+     * direto pelo AlkaShop (pickup do chao). Pensado pra integracoes de terceiros
+     * (AlkaMines ao minerar, AlkaDrop ao condensar) que vendem via
+     * {@link #isAutoSellActive} + {@link #sellItem} e precisam mostrar o mesmo feedback
+     * ao jogador sem duplicar a logica de actionbar/som/toggle - assim desligar
+     * auto-sell.actionbar no AlkaShop desliga em TODO lugar que auto-venda acontece,
+     * nao so no fallback de pickup.
+     */
+    void notifyAutoSell(Player player, Map<String, Double> totals);
 }

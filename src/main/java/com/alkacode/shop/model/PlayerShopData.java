@@ -66,7 +66,7 @@ public final class PlayerShopData {
     public void registerSale(int itemsSold, Map<String, Double> totals) {
         this.totalItemsSold += itemsSold;
         this.totalTransactions += 1;
-        this.totalSoldCoins += totals.getOrDefault("coins", 0.0);
+        this.totalSoldCoins += totals.getOrDefault("gold", 0.0);
         this.totalSoldEscarion += totals.getOrDefault("escarion", 0.0);
     }
 }

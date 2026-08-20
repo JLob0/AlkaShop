@@ -173,6 +173,6 @@ public final class VenderCommand implements CommandExecutor {
     private String formatTotals(Map<String, Double> totals) {
         boolean round = services.configManager.config().getBoolean("selling.round-values", true);
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
-        return PriceFormatter.formatTotals(totals, round, decimals);
+        return PriceFormatter.formatTotals(totals, round, decimals, services.configManager::currencyColor);
     }
 }

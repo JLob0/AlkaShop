@@ -4,8 +4,8 @@ main: com.alkacode.shop.AlkaShopPlugin
 api-version: '1.21.8'
 author: MestreDEV
 description: Sistema universal de vendas - precos globais por material, calculo inteligente de proporcoes via receitas de crafting, multiplas moedas via AlkaEconomy.
-depend: [AlkaEconomy]
-softdepend: [PlaceholderAPI, AlkaDrop]
+depend: [AlkaCore, AlkaEconomy]
+softdepend: [PlaceholderAPI, AlkaDrop, AlkaVips, AlkaRankUp]
 
 commands:
   vender:
@@ -29,7 +29,7 @@ commands:
     usage: /<command> <material>
   alkashop:
     description: Comando administrativo do AlkaShop.
-    usage: /<command> <reload|setprice|removeprice|debug|toggle|info>
+    usage: /<command> <reload|setprice|removeprice|gui|debug|toggle|info>
 
 permissions:
   alkashop.use:

@@ -1,9 +1,11 @@
 package com.alkacode.shop.hook;
 
 import com.alkacode.economy.AlkaEconomyPlugin;
+import com.alkacode.economy.CurrencyDefinition;
 import com.alkacode.economy.EconomyManager;
 import org.bukkit.Bukkit;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -33,6 +35,11 @@ public final class AlkaEconomyHook {
 
     public boolean isValidCurrency(String name) {
         return resolveCurrency(name) != null;
+    }
+
+    /** IDs de moeda configurados no AlkaEconomy agora - pra popular a GUI de admin sem hardcodar nenhuma. */
+    public List<String> currencyIds() {
+        return economyManager.getCurrencies().stream().map(CurrencyDefinition::id).toList();
     }
 
     public void deposit(UUID uuid, String currency, double amount) {

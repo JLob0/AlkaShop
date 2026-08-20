@@ -1,6 +1,7 @@
 package com.alkacode.shop.command;
 
 import com.alkacode.shop.ShopServices;
+import com.alkacode.shop.menu.AdminPriceHubMenu;
 import com.alkacode.shop.model.PlayerShopData;
 import com.alkacode.shop.util.PriceFormatter;
 import com.alkacode.shop.util.TextUtil;
@@ -10,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public final class ShopAdminCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(TextUtil.parse(services.configManager.prefix() + "<red>Uso: /alkashop <reload|setprice|removeprice|debug|toggle|info>"));
+            sender.sendMessage(TextUtil.parse(services.configManager.prefix() + "<red>Uso: /alkashop <reload|setprice|removeprice|gui|debug|toggle|info>"));
             return true;
         }
 
@@ -32,14 +34,28 @@ public final class ShopAdminCommand implements CommandExecutor {
             case "reload" -> reload(sender);
             case "setprice" -> setPrice(sender, args);
             case "removeprice" -> removePrice(sender, args);
+            case "gui" -> gui(sender);
             case "debug" -> debug(sender);
             case "toggle" -> toggle(sender, args);
             case "info" -> info(sender, args);
             default -> {
-                sender.sendMessage(TextUtil.parse(services.configManager.prefix() + "<red>Uso: /alkashop <reload|setprice|removeprice|debug|toggle|info>"));
+                sender.sendMessage(TextUtil.parse(services.configManager.prefix() + "<red>Uso: /alkashop <reload|setprice|removeprice|gui|debug|toggle|info>"));
                 yield true;
             }
         };
+    }
+
+    private boolean gui(CommandSender sender) {
+        if (!sender.hasPermission("alkashop.admin.setprice")) {
+            sender.sendMessage(TextUtil.parse(services.configManager.prefix() + services.configManager.message("general.no-permission")));
+            return true;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(TextUtil.parse(services.configManager.prefix() + services.configManager.message("general.player-only")));
+            return true;
+        }
+        new AdminPriceHubMenu(player, services).open();
+        return true;
     }
 
     private boolean reload(CommandSender sender) {

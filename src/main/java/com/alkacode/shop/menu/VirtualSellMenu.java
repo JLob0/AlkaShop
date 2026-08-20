@@ -86,7 +86,8 @@ public final class VirtualSellMenu extends AbstractShopMenu {
 
         boolean round = services.configManager.config().getBoolean("selling.round-values", true);
         int decimals = services.configManager.config().getInt("selling.decimal-places", 2);
-        services.sendMessage(viewer, "sell.sold-selected", Map.of("totals", PriceFormatter.formatTotals(totals, round, decimals)));
+        services.sendMessage(viewer, "sell.sold-selected", Map.of("totals",
+                PriceFormatter.formatTotals(totals, round, decimals, services.configManager::currencyColor)));
 
         returnRemainingItems();
         viewer.closeInventory();
@@ -110,6 +111,11 @@ public final class VirtualSellMenu extends AbstractShopMenu {
             }
             inventory.setItem(slot, null);
         }
+    }
+
+    @Override
+    public boolean allowsBottomInventoryClicks() {
+        return true;
     }
 
     @Override

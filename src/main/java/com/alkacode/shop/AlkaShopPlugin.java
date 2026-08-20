@@ -7,43 +7,37 @@ import com.alkacode.shop.command.VenderCommand;
 import com.alkacode.shop.config.ConfigManager;
 import com.alkacode.shop.hook.AlkaDropHook;
 import com.alkacode.shop.hook.AlkaEconomyHook;
+import com.alkacode.shop.hook.AlkaVipsHook;
 import com.alkacode.shop.hook.PlaceholderAPIHook;
+import com.alkacode.shop.hook.RankUpHook;
+import com.alkacode.shop.listener.AdminPriceChatListener;
 import com.alkacode.shop.listener.DropCollectedListener;
 import com.alkacode.shop.listener.PlayerJoinListener;
 import com.alkacode.shop.listener.PlayerPickupListener;
 import com.alkacode.shop.listener.ShopMenuListener;
+import com.alkacode.shop.manager.AdminPriceInputManager;
 import com.alkacode.shop.manager.PlayerDataManager;
 import com.alkacode.shop.manager.PriceManager;
 import com.alkacode.shop.manager.SellManager;
-import com.alkacode.shop.storage.DatabaseManager;
+import com.alkacode.shop.storage.AlkaShopRepository;
+import com.alkacode.core.plugin.AlkaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
+public final class AlkaShopPlugin extends AlkaPlugin {
 
-public final class AlkaShopPlugin extends JavaPlugin {
-
-    private DatabaseManager database;
+    private AlkaShopRepository database;
     private PlayerDataManager playerDataManager;
 
     @Override
-    public void onEnable() {
+    protected void onPluginEnable() {
         ConfigManager configManager = new ConfigManager(this);
         configManager.load();
 
-        database = new DatabaseManager(getLogger());
-        try {
-            database.open(getDataFolder());
-        } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "Falha ao abrir o banco SQLite - desabilitando o AlkaShop.", e);
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        database = new AlkaShopRepository(getAlkaAPI(), getLogger(), getDataFolder());
 
         PriceManager priceManager = new PriceManager(this);
         priceManager.load();
@@ -53,10 +47,26 @@ public final class AlkaShopPlugin extends JavaPlugin {
             getLogger().severe("AlkaEconomy nao encontrado - AlkaShop nao pode depositar nenhuma venda.");
         }
 
+        // AlkaVips e AlkaRankUp (softdepend) nao tem ordem garantida de onEnable - mesma
+        // licao ja documentada no AlkaMinesHook/AlkaDropHook: resolve 1 tick depois, nunca
+        // sincrono aqui, senao o hook fica permanentemente vazio se eles habilitarem depois
+        // do AlkaShop nesse boot especifico. As AtomicReference precisam existir antes do
+        // SellManager pra ele ja nascer com o Supplier certo (nunca o hook resolvido direto).
+        java.util.concurrent.atomic.AtomicReference<AlkaVipsHook> alkaVipsHookRef = new java.util.concurrent.atomic.AtomicReference<>(null);
+        java.util.concurrent.atomic.AtomicReference<RankUpHook> rankUpHookRef = new java.util.concurrent.atomic.AtomicReference<>(null);
+        Bukkit.getScheduler().runTask(this, () -> {
+            alkaVipsHookRef.set(AlkaVipsHook.tryHook(getLogger()));
+            rankUpHookRef.set(RankUpHook.tryHook(getLogger()));
+        });
+
         playerDataManager = new PlayerDataManager(database);
-        SellManager sellManager = new SellManager(priceManager, playerDataManager, economyHook, configManager);
+        SellManager sellManager = new SellManager(priceManager, playerDataManager, economyHook, configManager,
+                rankUpHookRef::get, alkaVipsHookRef::get);
 
         ShopServices services = new ShopServices(this, configManager, priceManager, playerDataManager, sellManager, economyHook);
+        services.adminPriceInput = new AdminPriceInputManager(services);
+        services.alkaVipsHookSupplier = alkaVipsHookRef::get;
+        services.rankUpHookSupplier = rankUpHookRef::get;
 
         registerCommands(services);
         registerListeners(services, configManager);
@@ -83,14 +93,9 @@ public final class AlkaShopPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    protected void onPluginDisable() {
         if (playerDataManager != null) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                playerDataManager.unload(player);
-            }
-        }
-        if (database != null) {
-            database.close();
+            playerDataManager.saveAllSync();
         }
     }
 
@@ -122,6 +127,7 @@ public final class AlkaShopPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ShopMenuListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(playerDataManager), this);
         getServer().getPluginManager().registerEvents(new DropCollectedListener(services), this);
+        getServer().getPluginManager().registerEvents(new AdminPriceChatListener(this, services.adminPriceInput), this);
 
         EventPriority priority = parsePriority(configManager.config().getString("event-priority", "HIGH"));
         PlayerPickupListener pickupListener = new PlayerPickupListener(services);

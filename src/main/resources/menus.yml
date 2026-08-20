@@ -1,69 +1,190 @@
 main-menu:
-  title: "<dark_gray>Vender itens"
+  title: "<#FFD700><b>✦ Mercado</b></#FFD700> <dark_gray>» <gray>AlkaShop"
   size: 27
   items:
     selected:
-      slot: 11
+      slot: 10
       material: HOPPER
-      name: "<green>Venda selecionada"
+      name: "<#55FF55>✦ Venda Selecionada"
       lore:
-        - "<gray>Vai abrir um bau virtual ao qual"
-        - "<gray>voce colocar todos os itens que"
-        - "<gray>queira vender."
+        - "<gray>Abre um bau virtual - deposite so"
+        - "<gray>o que quiser vender e o resto do"
+        - "<gray>seu inventario fica intocado."
         - ""
-        - "<yellow>Acesso rapido: <white>/vendersel"
+        - "<gray>Ideal pra quem tem item raro"
+        - "<gray>guardado e nao quer risco nenhum."
         - ""
-        - "<green>Clique para acessar."
+        - "<white>Acesso: <#55FF55>-FREE-"
+        - ""
+        - "<yellow>Atalho: <white>/vendersel"
+        - ""
+        - "<#55FF55>➤ Clique para abrir."
     all:
-      slot: 13
+      slot: 12
       material: CHEST
-      name: "<green>Vender tudo"
+      name: "<#55FF55>✦ Vender Tudo"
       lore:
-        - "<gray>Voce vai vender todos os itens"
-        - "<gray>que estao no seu inventario."
+        - "<gray>Varre o inventario inteiro e"
+        - "<gray>transforma em moeda tudo que"
+        - "<gray>tiver preco na loja."
         - ""
-        - "<yellow>Acesso rapido: <white>/vendertudo"
+        - "<white>Acesso: <#55FF55>-FREE-"
         - ""
-        - "<green>Clique para vender."
+        - "<yellow>Atalho: <white>/vendertudo"
+        - ""
+        - "<#55FF55>➤ Clique para vender."
     hand:
-      slot: 15
+      slot: 14
       material: ANVIL
-      name: "<green>Venda segurando"
+      name: "<#55FF55>✦ Vender da Mao"
       lore:
-        - "<gray>Voce vai vender os itens que"
-        - "<gray>voce esta segurando."
+        - "<gray>Vende so o que voce esta"
+        - "<gray>segurando agora - rapido pra"
+        - "<gray>descartar um stack por vez."
         - ""
-        - "<yellow>Acesso rapido: <white>/vendermao"
+        - "<white>Acesso: <#55FF55>-FREE-"
         - ""
-        - "<green>Clique para vender."
+        - "<yellow>Atalho: <white>/vendermao"
+        - ""
+        - "<#55FF55>➤ Clique para vender."
     auto-sell:
-      slot: 22
+      slot: 16
       material: EMERALD_BLOCK
-      name: "<green>Auto-Venda: <white><status>"
+      name: "<#FFD700>✦ Auto-Venda <dark_gray>» <white><status>"
       lore:
-        - "<gray>Configure quais itens serao"
-        - "<gray>vendidos automaticamente."
+        - "<gray>O sonho de todo minerador: nunca"
+        - "<gray>mais voltar do fundo da mina com"
+        - "<gray>o inventario lotado de pedra."
+        - ""
+        - "<gray>Escolha o que vende sozinho -"
+        - "<gray>por categoria ou item a item."
         - ""
         - "<gray>Status atual: <white><status>"
+        - "<gray><breakdown>"
+        - "<white>Acesso: <tier>"
         - ""
-        - "<yellow>Acesso rapido: <white>/venderautomatico"
+        - "<yellow>Atalho: <white>/venderautomatico"
         - ""
-        - "<green>Clique para configurar."
+        - "<#FFD700>➤ <action>"
+
+auto-sell-hub:
+  title: "<#55FF55><b>✦ Auto-Venda</b></#55FF55>"
+  size: 27
+  toggle-all-slot: 9
+  categories:
+    minerios:
+      slot: 11
+      material: IRON_PICKAXE
+      name: "<#55FFFF>⛏ Minerios"
+      lore:
+        - "<gray>Blocos e minerios arrancados"
+        - "<gray>da rocha na mineracao."
+        - ""
+        - "<gray>Ativos: <#55FF55><active></#55FF55><dark_gray>/<total>"
+        - "<white>Acesso: <tier>"
+        - ""
+        - "<#55FFFF>➤ Clique para configurar."
+    fazenda:
+      slot: 13
+      material: WHEAT
+      name: "<#FFAA00>🌾 Fazenda"
+      lore:
+        - "<gray>Colheitas, plantacoes e comida"
+        - "<gray>direto do campo ate a moeda."
+        - ""
+        - "<gray>Ativos: <#55FF55><active></#55FF55><dark_gray>/<total>"
+        - "<white>Acesso: <tier>"
+        - ""
+        - "<#FFAA00>➤ Clique para configurar."
+    madeira:
+      slot: 15
+      material: OAK_LOG
+      name: "<#AA6600>🪵 Madeiras"
+      lore:
+        - "<gray>Toras derrubadas na floresta,"
+        - "<gray>prontas pra virar Gold."
+        - ""
+        - "<gray>Ativos: <#55FF55><active></#55FF55><dark_gray>/<total>"
+        - "<white>Acesso: <tier>"
+        - ""
+        - "<#AA6600>➤ Clique para configurar."
+    outros:
+      slot: 17
+      material: CHEST
+      name: "<white>✦ Outros"
+      lore:
+        - "<gray>Todo o resto que nao se encaixa"
+        - "<gray>em nenhuma categoria acima."
+        - ""
+        - "<gray>Ativos: <#55FF55><active></#55FF55><dark_gray>/<total>"
+        - "<white>Acesso: <tier>"
+        - ""
+        - "<white>➤ Clique para configurar."
+
+admin-price-hub:
+  title: "<#FFD700><b>⚙ Precos - Admin</b></#FFD700>"
+  size: 27
+  categories:
+    minerios:
+      slot: 9
+      material: IRON_PICKAXE
+      name: "<#55FFFF>⛏ Minerios"
+      lore:
+        - "<gray>Precos de blocos e minerios"
+        - "<gray>extraidos na mineracao."
+        - ""
+        - "<gray>Configurados: <#FFD700><direct></#FFD700><dark_gray>/<total>"
+        - ""
+        - "<#55FFFF>➤ Clique para gerenciar."
+    fazenda:
+      slot: 11
+      material: WHEAT
+      name: "<#FFAA00>🌾 Fazenda"
+      lore:
+        - "<gray>Precos de colheitas e comida."
+        - ""
+        - "<gray>Configurados: <#FFD700><direct></#FFD700><dark_gray>/<total>"
+        - ""
+        - "<#FFAA00>➤ Clique para gerenciar."
+    madeira:
+      slot: 13
+      material: OAK_LOG
+      name: "<#AA6600>🪵 Madeiras"
+      lore:
+        - "<gray>Precos de toras e madeiras."
+        - ""
+        - "<gray>Configurados: <#FFD700><direct></#FFD700><dark_gray>/<total>"
+        - ""
+        - "<#AA6600>➤ Clique para gerenciar."
+    outros:
+      slot: 15
+      material: CHEST
+      name: "<white>✦ Outros"
+      lore:
+        - "<gray>Itens sem categoria definida."
+        - ""
+        - "<gray>Configurados: <#FFD700><direct></#FFD700><dark_gray>/<total>"
+        - ""
+        - "<white>➤ Clique para gerenciar."
 
 virtual-chest:
-  title: "<dark_gray>Coloque os itens para vender"
+  title: "<#FFD700><b>✦ Bau da Venda</b></#FFD700>"
   size: 54
   confirm-slot: 49
   confirm-item:
     material: EMERALD_BLOCK
-    name: "<green><b>CONFIRMAR VENDA</b>"
+    name: "<#55FF55><b>✦ CONFIRMAR VENDA</b></#55FF55>"
     lore:
-      - "<gray>Clique para vender todos os itens"
-      - "<gray>colocados acima."
+      - "<gray>Transforma tudo que esta no bau"
+      - "<gray>acima em moeda na sua conta."
+      - ""
+      - "<#55FF55>➤ Clique para confirmar."
   cancel-slot: 53
   cancel-item:
     material: BARRIER
-    name: "<red><b>CANCELAR</b>"
+    name: "<#FF5555><b>✦ CANCELAR</b></#FF5555>"
     lore:
-      - "<gray>Clique para cancelar e devolver"
-      - "<gray>os itens ao seu inventario."
+      - "<gray>Devolve tudo pro seu inventario"
+      - "<gray>sem vender nada."
+      - ""
+      - "<#FF5555>➤ Clique para cancelar."

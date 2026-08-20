@@ -244,6 +244,48 @@ public final class PriceManager {
         resolveAll();
     }
 
+    public boolean hasDirectPrice(Material material) {
+        return directPrices.containsKey(material);
+    }
+
+    /** Bloco de quem este material herda preco via ratio de crafting reversivel, ou null se ele nao e derivado de nada. */
+    public Material getParent(Material material) {
+        return itemToBlock.get(material);
+    }
+
+    /** Quantas unidades deste material equivalem a 1 unidade do pai (ex: 9 pro RAW_IRON -> RAW_IRON_BLOCK). 0 se nao e derivado. */
+    public int getRatio(Material material) {
+        return itemToRatio.getOrDefault(material, 0);
+    }
+
+    /** Precos configurados diretamente pro material (NAO inclui preco derivado via ratio de crafting). */
+    public Map<String, Double> directPricesOf(Material material) {
+        ShopPrice price = directPrices.get(material);
+        return price != null ? price.prices() : Map.of();
+    }
+
+    /** So os materiais com entrada direta em prices.yml - o que a GUI de admin gerencia (itens derivados via ratio de crafting nao tem linha propria pra editar). */
+    public Set<Material> allDirectMaterials() {
+        return new HashSet<>(directPrices.keySet());
+    }
+
+    public void setCategory(Material material, String category) {
+        if (category == null || category.isBlank()) {
+            materialCategories.remove(material);
+        } else {
+            materialCategories.put(material, category.toLowerCase());
+        }
+        persistDirectPrices();
+    }
+
+    /** Remove o material inteiro (todas as moedas + categoria) - fica nao vendavel de novo. */
+    public void removeMaterial(Material material) {
+        directPrices.remove(material);
+        materialCategories.remove(material);
+        persistDirectPrices();
+        resolveAll();
+    }
+
     public boolean removePrice(Material material, String currency) {
         ShopPrice existing = directPrices.get(material);
         if (existing == null || !existing.prices().containsKey(currency.toLowerCase())) {
@@ -291,16 +333,30 @@ public final class PriceManager {
         return resolvedCache;
     }
 
+    /**
+     * Categoria direta do material, ou - se ele nao tem uma propria - a do "pai" (bloco)
+     * de quem o preco foi derivado via ratio de crafting. Sem esse fallback, um item so
+     * com preco derivado (ex: RAW_IRON, que ganha preco de RAW_IRON_BLOCK) nunca aparece
+     * na categoria certa (ex: "minerios") nem no menu de auto-venda nem na GUI de admin -
+     * ele so teria categoria se alguem configurasse "category" nele DIRETAMENTE em
+     * prices.yml, o que ninguem faz pra item derivado (o preco dele nem existe la).
+     */
     public String getCategory(Material material) {
-        return materialCategories.getOrDefault(material, "");
+        String direct = materialCategories.get(material);
+        if (direct != null) {
+            return direct;
+        }
+        Material parent = itemToBlock.get(material);
+        return parent != null ? materialCategories.getOrDefault(parent, "") : "";
     }
 
+    /** Usa {@link #getCategory} (com fallback pro "pai") pra cada material vendavel, nao so os com categoria propria - senao /vendertudo <categoria> nao pegaria um item so com preco derivado (ex: RAW_IRON). */
     public Set<Material> getMaterialsByCategory(String category) {
         String cat = category.toLowerCase();
         Set<Material> result = new HashSet<>();
-        for (Map.Entry<Material, String> entry : materialCategories.entrySet()) {
-            if (entry.getValue().equals(cat)) {
-                result.add(entry.getKey());
+        for (Material material : resolvedCache.keySet()) {
+            if (getCategory(material).equals(cat)) {
+                result.add(material);
             }
         }
         return result;

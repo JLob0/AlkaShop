@@ -19,6 +19,19 @@ selling:
   # Casas decimais
   decimal-places: 2
 
+# Cor (tag MiniMessage) de cada moeda nas mensagens de venda (<amount>/<totals>) -
+# chave = currency id do AlkaEconomy. "default" cobre qualquer moeda sem entrada aqui
+# (inclusive uma nova moeda criada no config.yml do AlkaEconomy sem editar isso).
+currency-colors:
+  gold: "<#FFD700>"
+  alkarion: "<#8B00FF>"
+  nacar: "<#FF69B4>"
+  escarion: "<#55FF55>"
+  soul: "<#66FFFF>"
+  ticks: "<#AAAAAA>"
+  prisma: "<#00E5EE>"
+  default: "<white>"
+
 # Auto-sell
 auto-sell:
   # Som ao vender automaticamente

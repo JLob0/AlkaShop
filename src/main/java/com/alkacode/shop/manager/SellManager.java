@@ -3,6 +3,8 @@ package com.alkacode.shop.manager;
 import com.alkacode.shop.config.ConfigManager;
 import com.alkacode.shop.event.ItemSellEvent;
 import com.alkacode.shop.hook.AlkaEconomyHook;
+import com.alkacode.shop.hook.AlkaVipsHook;
+import com.alkacode.shop.hook.RankUpHook;
 import com.alkacode.shop.model.PlayerShopData;
 import com.alkacode.shop.model.enums.SellType;
 import com.alkacode.shop.util.InventoryUtil;
@@ -17,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Nucleo da venda: computa totais, deposita via AlkaEconomy, dispara ItemSellEvent
@@ -30,13 +33,18 @@ public final class SellManager {
     private final PlayerDataManager playerDataManager;
     private final AlkaEconomyHook economyHook;
     private final ConfigManager configManager;
+    private final Supplier<RankUpHook> rankUpHookSupplier;
+    private final Supplier<AlkaVipsHook> vipsHookSupplier;
 
     public SellManager(PriceManager priceManager, PlayerDataManager playerDataManager, AlkaEconomyHook economyHook,
-                        ConfigManager configManager) {
+                        ConfigManager configManager, Supplier<RankUpHook> rankUpHookSupplier,
+                        Supplier<AlkaVipsHook> vipsHookSupplier) {
         this.priceManager = priceManager;
         this.playerDataManager = playerDataManager;
         this.economyHook = economyHook;
         this.configManager = configManager;
+        this.rankUpHookSupplier = rankUpHookSupplier;
+        this.vipsHookSupplier = vipsHookSupplier;
     }
 
     /** /vendertudo - varre e remove os itens vendaveis do inventario (respeitando os toggles de config.yml). */
@@ -129,6 +137,13 @@ public final class SellManager {
         Map<String, Double> totals = new LinkedHashMap<>();
         int itemsSold = 0;
 
+        RankUpHook rankUpHook = rankUpHookSupplier.get();
+        AlkaVipsHook vipsHook = vipsHookSupplier.get();
+        double sellMultiplier = rankUpHook != null ? rankUpHook.getSellMultiplier(player.getUniqueId()) : 1.0;
+        if (vipsHook != null) {
+            sellMultiplier *= vipsHook.getSellMultiplier(player.getUniqueId());
+        }
+
         for (Map.Entry<Material, Integer> entry : counts.entrySet()) {
             Material material = entry.getKey();
             int amount = entry.getValue();
@@ -137,7 +152,7 @@ public final class SellManager {
             for (String currency : priceManager.resolvedPrices(material).keySet()) {
                 double unitPrice = priceManager.getPrice(material, currency);
                 if (unitPrice > 0) {
-                    itemTotals.put(currency, unitPrice * amount);
+                    itemTotals.put(currency, unitPrice * amount * sellMultiplier);
                 }
             }
             if (itemTotals.isEmpty()) {
