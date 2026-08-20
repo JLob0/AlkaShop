@@ -28,13 +28,11 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
     // AlkaCore e necessario tambem porque AlkaEconomyPlugin agora estende
     // com.alkacode.core.plugin.AlkaPlugin (o javac precisa da hierarquia completa).
-    compileOnly("com.alkacode:AlkaCore:1.0.3")
+    compileOnly("com.alkacode:AlkaCore:1.0.8")
     compileOnly("com.alkacode:AlkaEconomy:1.0.8")
     // integracao soft - so escuta DropCollectedEvent se o plugin estiver instalado
     // (publicado via `./gradlew publishToMavenLocal` no projeto AlkaDrop).
     compileOnly("com.alkacode:AlkaDrop:1.0.1")
-
-    implementation("org.xerial:sqlite-jdbc:3.46.1.3")
 }
 
 tasks.withType<JavaCompile> {
@@ -44,7 +42,6 @@ tasks.withType<JavaCompile> {
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
-    relocate("org.sqlite", "com.alkacode.shop.libs.sqlite")
 }
 
 tasks.build {
