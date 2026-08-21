@@ -1,3 +1,14 @@
+common:
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+  prev-page:
+    material: ARROW
+    name: "<yellow>◀ Pagina anterior"
+  next-page:
+    material: ARROW
+    name: "<yellow>Proxima pagina ▶"
+
 main-menu:
   title: "<#FFD700><b>✦ Mercado</b></#FFD700> <dark_gray>» <gray>AlkaShop"
   size: 27
@@ -71,6 +82,29 @@ auto-sell-hub:
   title: "<#55FF55><b>✦ Auto-Venda</b></#55FF55>"
   size: 27
   toggle-all-slot: 9
+  back-button:
+    material: ARROW
+    name: "<#FFD700>◀ Voltar ao mercado"
+  toggle-all-on:
+    material: LIME_WOOL
+    name: "<#55FF55><b>✦ AUTO-VENDA TOTAL: LIGADA</b></#55FF55>"
+    lore:
+      - "<gray>Vende todo item que voce minerar,"
+      - "<gray>colher ou pegar do chao - sem excecao."
+      - ""
+      - "<white>Acesso: <tier>"
+      - ""
+      - "<yellow>Clique para desligar."
+  toggle-all-off:
+    material: RED_WOOL
+    name: "<#FF5555><b>✦ AUTO-VENDA TOTAL: DESLIGADA</b></#FF5555>"
+    lore:
+      - "<gray>Vende todo item que voce minerar,"
+      - "<gray>colher ou pegar do chao - sem excecao."
+      - ""
+      - "<white>Acesso: <tier>"
+      - ""
+      - "<yellow>Clique para ligar."
   categories:
     minerios:
       slot: 11
@@ -188,3 +222,59 @@ virtual-chest:
       - "<gray>sem vender nada."
       - ""
       - "<#FF5555>➤ Clique para cancelar."
+
+# Grade paginada de materiais de UMA categoria (jogador) - material/icone real de cada
+# item vem do proprio Material (dado, nao chrome), so os templates de nome/lore por
+# estado (ligado/desligado) e a chrome (borda/voltar/vazio/paginacao) ficam aqui.
+auto-sell-category:
+  title: "<#55FF55><b>✦ Auto-Venda</b></#55FF55> <dark_gray>» </dark_gray><category>"
+  back-button:
+    material: ARROW
+    name: "<#55FF55>◀ Voltar as categorias"
+  empty-state:
+    material: BARRIER
+    name: "<red>Nenhum item nesta categoria"
+  item-enabled:
+    name: "<#55FF55>✦ <material>"
+    lore:
+      - "<gray>Status: <#55FF55><b>ATIVADO</b></#55FF55>"
+      - "<gray>Todo drop desse item vira moeda na hora."
+      - ""
+      - "<yellow>Clique para desativar"
+  item-disabled:
+    name: "<gray><material>"
+    lore:
+      - "<gray>Status: <dark_gray><b>DESATIVADO</b></dark_gray>"
+      - "<gray>Esse item vai pro seu inventario normalmente."
+      - ""
+      - "<yellow>Clique para ativar"
+
+# Grade paginada de precos de UMA categoria (admin) - mesmo principio: material/preco
+# real fica em Java (PriceManager e a fonte da verdade), so os templates de nome/lore
+# fixos e a chrome ficam aqui. As linhas de preco por moeda (variam em quantidade) sao
+# concatenadas em Java, ver PriceFormatter.
+admin-price-category:
+  title: "<#FFD700><b>⚙ Precos:</b></#FFD700> <category>"
+  back-button:
+    material: ARROW
+    name: "<#FFD700>◀ Voltar ao painel"
+  item-direct:
+    name: "<#FFD700><material>"
+    lore-header:
+      - "<gray>Categoria: <white><categoria>"
+    lore-footer:
+      - ""
+      - "<yellow>Clique esquerdo: <white>definir/atualizar preco"
+      - "<yellow>Clique direito: <white>remover uma moeda"
+      - "<yellow>Shift+direito: <white>remover o item inteiro"
+  item-derived:
+    name: "<gray><material> <dark_gray>(herdado)"
+    lore-header:
+      - "<gray>Categoria: <white><categoria>"
+    lore-footer-with-parent:
+      - ""
+      - "<gray>Preco herdado de <white><parent></white>."
+      - "<yellow>Clique em qualquer botao: <white>editar o preco do bloco-pai"
+    lore-footer-no-parent:
+      - ""
+      - "<yellow>Clique em qualquer botao: <white>editar o preco do bloco-pai"

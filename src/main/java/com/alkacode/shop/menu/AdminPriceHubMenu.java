@@ -28,10 +28,7 @@ public final class AdminPriceHubMenu extends AbstractShopMenu {
         if (config == null) {
             return;
         }
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        var fMeta = filler.getItemMeta();
-        fMeta.displayName(TextUtil.parse(" "));
-        filler.setItemMeta(fMeta);
+        ItemStack filler = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.filler"), Map.of());
         for (int i = 0; i < getInventory().getSize(); i++) {
             setItem(i, filler);
         }

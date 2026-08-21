@@ -7,10 +7,8 @@ import com.alkacode.shop.util.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.Map;
 
 /** Hub de auto-venda: um botao "ativar/desativar tudo" e um botao por categoria, cada um abrindo {@link AutoSellCategoryMenu}. */
@@ -33,10 +31,7 @@ public final class AutoSellConfigMenu extends AbstractShopMenu {
         }
         PlayerShopData data = services.playerDataManager.get(viewer);
 
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        var fMeta = filler.getItemMeta();
-        fMeta.displayName(TextUtil.parse(" "));
-        filler.setItemMeta(fMeta);
+        ItemStack filler = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.filler"), Map.of());
         for (int i = 0; i < getInventory().getSize(); i++) {
             setItem(i, filler);
         }
@@ -53,10 +48,7 @@ public final class AutoSellConfigMenu extends AbstractShopMenu {
     }
 
     private void buildBackButton() {
-        ItemStack back = new ItemStack(Material.ARROW);
-        var meta = back.getItemMeta();
-        meta.displayName(TextUtil.parse("<#FFD700>◀ Voltar ao mercado"));
-        back.setItemMeta(meta);
+        ItemStack back = ItemUtil.build(config.getConfigurationSection("back-button"), Map.of());
         setItem(18, back, e -> {
             viewer.closeInventory();
             new MainSellMenu(viewer, services).open();
@@ -69,21 +61,8 @@ public final class AutoSellConfigMenu extends AbstractShopMenu {
             return;
         }
         boolean allEnabled = data.autoSellAll();
-        ItemStack toggleAll = new ItemStack(allEnabled ? Material.LIME_WOOL : Material.RED_WOOL);
-        var meta = toggleAll.getItemMeta();
-        meta.displayName(TextUtil.parse(allEnabled
-                ? "<#55FF55><b>✦ AUTO-VENDA TOTAL: LIGADA</b></#55FF55>"
-                : "<#FF5555><b>✦ AUTO-VENDA TOTAL: DESLIGADA</b></#FF5555>"));
-        meta.lore(List.of(
-                TextUtil.parse("<gray>Vende todo item que voce minerar,"),
-                TextUtil.parse("<gray>colher ou pegar do chao - sem excecao."),
-                TextUtil.parse(" "),
-                TextUtil.parse("<white>Acesso: " + services.vipTierTag()),
-                TextUtil.parse(" "),
-                TextUtil.parse("<yellow>Clique para " + (allEnabled ? "desligar" : "ligar") + ".")
-        ));
-        meta.addItemFlags(ItemFlag.values());
-        toggleAll.setItemMeta(meta);
+        Map<String, String> placeholders = Map.of("tier", services.vipTierTag());
+        ItemStack toggleAll = ItemUtil.build(config.getConfigurationSection(allEnabled ? "toggle-all-on" : "toggle-all-off"), placeholders);
         setItem(slot, toggleAll, e -> {
             if (!viewer.hasPermission("alkashop.autosell.all")) {
                 services.sendMessage(viewer, "general.no-permission", Map.of());

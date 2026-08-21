@@ -5,7 +5,6 @@ import com.alkacode.shop.model.enums.SellType;
 import com.alkacode.shop.util.ItemUtil;
 import com.alkacode.shop.util.PriceFormatter;
 import com.alkacode.shop.util.TextUtil;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.entity.Player;
@@ -44,10 +43,7 @@ public final class VirtualSellMenu extends AbstractShopMenu {
 
         markInteractive(0, STORAGE_END);
 
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        var meta = filler.getItemMeta();
-        meta.displayName(TextUtil.parse(" "));
-        filler.setItemMeta(meta);
+        ItemStack filler = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.filler"), Map.of());
         for (int slot = STORAGE_END + 1; slot < inventory.getSize(); slot++) {
             if (slot != confirmSlot && slot != cancelSlot) {
                 setItem(slot, filler);

@@ -2,10 +2,11 @@ package com.alkacode.shop.menu;
 
 import com.alkacode.shop.ShopServices;
 import com.alkacode.shop.model.PlayerShopData;
+import com.alkacode.shop.util.ItemUtil;
 import com.alkacode.shop.util.TextUtil;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
     private int currentPage = 0;
 
     public AutoSellCategoryMenu(Player viewer, ShopServices services, String category, String displayName) {
-        super(viewer, TextUtil.parse("<#55FF55><b>✦ Auto-Venda</b></#55FF55> <dark_gray>» </dark_gray>" + displayName), 54);
+        super(viewer, TextUtil.parse(services.configManager.menus().getString("auto-sell-category.title",
+                "<#55FF55><b>✦ Auto-Venda</b></#55FF55> <dark_gray>» </dark_gray><category>"), Map.of("category", displayName)), 54);
         this.services = services;
         this.category = category;
         this.materials = new ArrayList<>();
@@ -42,20 +44,14 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
     }
 
     private void build() {
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        var fMeta = filler.getItemMeta();
-        fMeta.displayName(TextUtil.parse(" "));
-        filler.setItemMeta(fMeta);
+        ItemStack filler = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.filler"), Map.of());
         for (int i = 36; i < 54; i++) {
             if (i != BACK_SLOT && i != PREV_SLOT && i != NEXT_SLOT) {
                 setItem(i, filler);
             }
         }
 
-        ItemStack back = new ItemStack(Material.ARROW);
-        var bMeta = back.getItemMeta();
-        bMeta.displayName(TextUtil.parse("<#55FF55>◀ Voltar as categorias"));
-        back.setItemMeta(bMeta);
+        ItemStack back = ItemUtil.build(services.configManager.menus().getConfigurationSection("auto-sell-category.back-button"), Map.of());
         setItem(BACK_SLOT, back, e -> {
             viewer.closeInventory();
             new AutoSellConfigMenu(viewer, services).open();
@@ -77,10 +73,7 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
         }
 
         if (materials.isEmpty()) {
-            ItemStack empty = new ItemStack(Material.BARRIER);
-            var meta = empty.getItemMeta();
-            meta.displayName(TextUtil.parse("<red>Nenhum item nesta categoria"));
-            empty.setItemMeta(meta);
+            ItemStack empty = ItemUtil.build(services.configManager.menus().getConfigurationSection("auto-sell-category.empty-state"), Map.of());
             setItem(4, empty);
         }
 
@@ -91,20 +84,16 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
             Material mat = materials.get(i);
             boolean enabled = data.isAutoSellEnabled(mat);
 
+            ConfigurationSection template = services.configManager.menus()
+                    .getConfigurationSection(enabled ? "auto-sell-category.item-enabled" : "auto-sell-category.item-disabled");
             ItemStack icon = new ItemStack(mat);
             var meta = icon.getItemMeta();
-            meta.displayName(TextUtil.parse((enabled ? "<#55FF55>✦ " : "<gray>") + mat.name()));
-            List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
-            lore.add(TextUtil.parse(enabled
-                    ? "<gray>Status: <#55FF55><b>ATIVADO</b></#55FF55>"
-                    : "<gray>Status: <dark_gray><b>DESATIVADO</b></dark_gray>"));
-            lore.add(TextUtil.parse(enabled
-                    ? "<gray>Todo drop desse item vira moeda na hora."
-                    : "<gray>Esse item vai pro seu inventario normalmente."));
-            lore.add(TextUtil.parse(" "));
-            lore.add(TextUtil.parse("<yellow>Clique para " + (enabled ? "desativar" : "ativar")));
-            meta.lore(lore);
-            meta.addItemFlags(ItemFlag.values());
+            Map<String, String> placeholders = Map.of("material", mat.name());
+            if (template != null) {
+                meta.displayName(TextUtil.parse(template.getString("name", ""), placeholders));
+                meta.lore(TextUtil.parseList(template.getStringList("lore"), placeholders));
+            }
+            meta.addItemFlags(org.bukkit.inventory.ItemFlag.values());
             icon.setItemMeta(meta);
 
             int slot = i - start;
@@ -124,10 +113,7 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
         }
 
         if (currentPage > 0) {
-            ItemStack prev = new ItemStack(Material.ARROW);
-            var pMeta = prev.getItemMeta();
-            pMeta.displayName(TextUtil.parse("<yellow>◀ Pagina anterior"));
-            prev.setItemMeta(pMeta);
+            ItemStack prev = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.prev-page"), Map.of());
             setItem(PREV_SLOT, prev, e -> {
                 currentPage--;
                 renderPage();
@@ -137,10 +123,7 @@ public final class AutoSellCategoryMenu extends AbstractShopMenu {
         }
 
         if (currentPage < totalPages - 1) {
-            ItemStack next = new ItemStack(Material.ARROW);
-            var nMeta = next.getItemMeta();
-            nMeta.displayName(TextUtil.parse("<yellow>Proxima pagina ▶"));
-            next.setItemMeta(nMeta);
+            ItemStack next = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.next-page"), Map.of());
             setItem(NEXT_SLOT, next, e -> {
                 currentPage++;
                 renderPage();

@@ -1,9 +1,11 @@
 package com.alkacode.shop.menu;
 
 import com.alkacode.shop.ShopServices;
+import com.alkacode.shop.util.ItemUtil;
 import com.alkacode.shop.util.PriceFormatter;
 import com.alkacode.shop.util.TextUtil;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +48,8 @@ public final class AdminPriceCategoryMenu extends AbstractShopMenu {
     private long pendingRemovalExpiresAt;
 
     public AdminPriceCategoryMenu(Player viewer, ShopServices services, String category, String displayName) {
-        super(viewer, TextUtil.parse("<#FFD700><b>⚙ Precos:</b></#FFD700> " + displayName), 54);
+        super(viewer, TextUtil.parse(services.configManager.menus().getString("admin-price-category.title",
+                "<#FFD700><b>⚙ Precos:</b></#FFD700> <category>"), Map.of("category", displayName)), 54);
         this.services = services;
         this.category = category;
         this.displayName = displayName;
@@ -63,20 +66,14 @@ public final class AdminPriceCategoryMenu extends AbstractShopMenu {
     }
 
     private void build() {
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        var fMeta = filler.getItemMeta();
-        fMeta.displayName(TextUtil.parse(" "));
-        filler.setItemMeta(fMeta);
+        ItemStack filler = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.filler"), Map.of());
         for (int i = 36; i < 54; i++) {
             if (i != BACK_SLOT && i != PREV_SLOT && i != NEXT_SLOT) {
                 setItem(i, filler);
             }
         }
 
-        ItemStack back = new ItemStack(Material.ARROW);
-        var bMeta = back.getItemMeta();
-        bMeta.displayName(TextUtil.parse("<#FFD700>◀ Voltar ao painel"));
-        back.setItemMeta(bMeta);
+        ItemStack back = ItemUtil.build(services.configManager.menus().getConfigurationSection("admin-price-category.back-button"), Map.of());
         setItem(BACK_SLOT, back, e -> {
             viewer.closeInventory();
             new AdminPriceHubMenu(viewer, services).open();
@@ -115,10 +112,7 @@ public final class AdminPriceCategoryMenu extends AbstractShopMenu {
         }
 
         if (currentPage > 0) {
-            ItemStack prev = new ItemStack(Material.ARROW);
-            var pMeta = prev.getItemMeta();
-            pMeta.displayName(TextUtil.parse("<yellow>◀ Pagina anterior"));
-            prev.setItemMeta(pMeta);
+            ItemStack prev = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.prev-page"), Map.of());
             setItem(PREV_SLOT, prev, e -> {
                 currentPage--;
                 renderPage();
@@ -128,10 +122,7 @@ public final class AdminPriceCategoryMenu extends AbstractShopMenu {
         }
 
         if (currentPage < totalPages - 1) {
-            ItemStack next = new ItemStack(Material.ARROW);
-            var nMeta = next.getItemMeta();
-            nMeta.displayName(TextUtil.parse("<yellow>Proxima pagina ▶"));
-            next.setItemMeta(nMeta);
+            ItemStack next = ItemUtil.build(services.configManager.menus().getConfigurationSection("common.next-page"), Map.of());
             setItem(NEXT_SLOT, next, e -> {
                 currentPage++;
                 renderPage();
@@ -147,33 +138,45 @@ public final class AdminPriceCategoryMenu extends AbstractShopMenu {
         boolean direct = services.priceManager.hasDirectPrice(mat);
         Material parent = services.priceManager.getParent(mat);
 
+        ConfigurationSection template = services.configManager.menus()
+                .getConfigurationSection(direct ? "admin-price-category.item-direct" : "admin-price-category.item-derived");
+        Map<String, String> placeholders = Map.of(
+                "material", mat.name(),
+                "categoria", catDisplay,
+                "parent", parent != null ? parent.name() : "");
+
         ItemStack icon = new ItemStack(mat);
         var meta = icon.getItemMeta();
         List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
 
+        if (template != null) {
+            meta.displayName(TextUtil.parse(template.getString("name", ""), placeholders));
+            for (String line : template.getStringList("lore-header")) {
+                lore.add(TextUtil.parse(line, placeholders));
+            }
+        }
+
         if (direct) {
-            meta.displayName(TextUtil.parse("<#FFD700>" + mat.name()));
-            lore.add(TextUtil.parse("<gray>Categoria: <white>" + catDisplay));
             for (Map.Entry<String, Double> entry : services.priceManager.directPricesOf(mat).entrySet()) {
                 lore.add(TextUtil.parse("<gray>✦ <white>" + entry.getKey() + "</white>: <yellow>"
                         + PriceFormatter.format(entry.getValue(), true, 2)));
             }
-            lore.add(TextUtil.parse(" "));
-            lore.add(TextUtil.parse("<yellow>Clique esquerdo: <white>definir/atualizar preco"));
-            lore.add(TextUtil.parse("<yellow>Clique direito: <white>remover uma moeda"));
-            lore.add(TextUtil.parse("<yellow>Shift+direito: <white>remover o item inteiro"));
+            if (template != null) {
+                for (String line : template.getStringList("lore-footer")) {
+                    lore.add(TextUtil.parse(line, placeholders));
+                }
+            }
         } else {
-            meta.displayName(TextUtil.parse("<gray>" + mat.name() + " <dark_gray>(herdado)"));
-            lore.add(TextUtil.parse("<gray>Categoria: <white>" + catDisplay));
             for (Map.Entry<String, Double> entry : services.priceManager.resolvedPrices(mat).entrySet()) {
                 lore.add(TextUtil.parse("<gray>✦ <white>" + entry.getKey() + "</white>: <yellow>"
                         + PriceFormatter.format(entry.getValue(), true, 2) + " <dark_gray>(herdado)"));
             }
-            lore.add(TextUtil.parse(" "));
-            if (parent != null) {
-                lore.add(TextUtil.parse("<gray>Preco herdado de <white>" + parent.name() + "</white>."));
+            String footerKey = parent != null ? "lore-footer-with-parent" : "lore-footer-no-parent";
+            if (template != null) {
+                for (String line : template.getStringList(footerKey)) {
+                    lore.add(TextUtil.parse(line, placeholders));
+                }
             }
-            lore.add(TextUtil.parse("<yellow>Clique em qualquer botao: <white>editar o preco do bloco-pai"));
         }
         meta.lore(lore);
         meta.addItemFlags(ItemFlag.values());
